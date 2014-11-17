@@ -8,7 +8,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.mvc.multiaction.MultiActionController;
 
-import com.oklink.service.ballance.BallanceService;
+import com.oklink.service.balance.BalanceService;
 
 /**
  * @author longdeng.zhang@gmail.com
@@ -16,15 +16,15 @@ import com.oklink.service.ballance.BallanceService;
  * 类说明
  */
 @Controller
-@RequestMapping(value="/ballance/*.do")
-public class BallanceController extends MultiActionController {
+@RequestMapping(value="/balance/*.do")
+public class BalanceController extends MultiActionController {
 	
 	@Autowired
-	private BallanceService ballanceService;
+	private BalanceService balanceService;
 
 	public String index(HttpServletRequest request, HttpServletResponse response)
 			throws Exception {
-		ballanceService.getAppBallanceList(0);
+		balanceService.getAppBalanceList(0);
 		return "user/index";
 	}
 	
