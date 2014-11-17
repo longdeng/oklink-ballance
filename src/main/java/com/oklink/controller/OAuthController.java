@@ -62,8 +62,6 @@ public class OAuthController extends MultiActionController {
 	 */
 	public String token(HttpServletRequest request, HttpServletResponse response)
 			throws Exception {
-		String clazz = Thread.currentThread().getStackTrace()[1].getClassName();
-		String method = Thread.currentThread().getStackTrace()[1].getMethodName();
 		AppUser appUser = new AppUser();
 		appUser.setId(1);
 		
@@ -93,7 +91,7 @@ public class OAuthController extends MultiActionController {
 					objectId = boinbase.getUser().getId();
 					break;
 			}
-			Logs.getinfoLogger().error(clazz+"."+method+":	objectId="+objectId);
+			Logs.getinfoLogger().error("OAuthController token:	objectId="+objectId);
 			//更新数据token信息
 			long value = 0;
 			AppToken appToken = tokenService.getAppToken(appUser.getId(), type, objectId);
@@ -115,9 +113,9 @@ public class OAuthController extends MultiActionController {
 				value = tokenService.updateAppToken(appToken);
 			}
 			if(value<0){
-				Logs.geterrorLogger().error(clazz+"."+method+":Reauthorization failure");
+				Logs.geterrorLogger().error("OAuthController token:Reauthorization failure");
 			}else{
-				Logs.getinfoLogger().error(clazz+"."+method+":Reauthorization success");
+				Logs.getinfoLogger().error("OAuthController token:Reauthorization success");
 			}
 		}
 		return "redirect:/token/index.do";
