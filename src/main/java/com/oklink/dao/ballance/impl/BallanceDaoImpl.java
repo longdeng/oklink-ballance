@@ -6,8 +6,8 @@ import java.util.Map;
 
 import org.springframework.stereotype.Repository;
 
-import com.oklink.dao.ballance.BallanceDao;
-import com.oklink.dao.bean.AppBallance;
+import com.oklink.dao.ballance.BalanceDao;
+import com.oklink.dao.bean.AppBalance;
 import com.oklink.util.Db;
 
 /**
@@ -16,14 +16,14 @@ import com.oklink.util.Db;
  * 类说明
  */
 @Repository
-public class BallanceDaoImpl implements BallanceDao {
+public class BallanceDaoImpl implements BalanceDao {
 
 	/**
 	 * 获取ballance记录
 	 * @param id
 	 * @return
 	 */
-	public List<Map<String, Object>> getAppBallance(long id){
+	public List<Map<String, Object>> getAppBalance(long id){
 		String sql = "";
 		return Db.executeQuery(sql, new Object[]{id});
 	}
@@ -33,8 +33,8 @@ public class BallanceDaoImpl implements BallanceDao {
 	 * @param id
 	 * @return
 	 */
-	public List<Map<String, Object>> getAppBallanceList(long id){
-		String sql = "select * from app_ballance where user_id = ? ";
+	public List<Map<String, Object>> getAppBalanceList(long id){
+		String sql = "select * from app_balance where user_id = ? ";
 		return Db.executeQuery(sql, new Object[]{id});
 	}
 	
@@ -43,12 +43,12 @@ public class BallanceDaoImpl implements BallanceDao {
 	 * @param id
 	 * @return
 	 */
-	public long insertAppBallance(AppBallance appBallance){
+	public long insertAppBallance(AppBalance appBallance){
 		List<Object> paramList = new ArrayList<Object>();
-		String sql = "insert into app_ballance() values()";
+		String sql = "insert into app_balance() values()";
 		paramList.add(appBallance.getUserId());
-		paramList.add(appBallance.getLatestBtcBallance());
-		paramList.add(appBallance.getLatestLtcBallance());
+		paramList.add(appBallance.getLatestBtcBalance());
+		paramList.add(appBallance.getLatestLtcBalance());
 		return Db.executeUpdate(sql, paramList.toArray());
 	}
 	
@@ -57,11 +57,11 @@ public class BallanceDaoImpl implements BallanceDao {
 	 * @param id
 	 * @return
 	 */
-	public long updateAppBallance(AppBallance appBallance){
+	public long updateAppBallance(AppBalance appBallance){
 		List<Object> paramList = new ArrayList<Object>();
-		String sql = "update app_ballance set latest_btc_ballance = ?,latest_ltc_ballance = ?,modify_date = NOW() where id = ? ";
-		paramList.add(appBallance.getLatestBtcBallance());
-		paramList.add(appBallance.getLatestLtcBallance());
+		String sql = "update app_balance set latest_btc_balance = ?,latest_ltc_balance = ?,modify_date = NOW() where id = ? ";
+		paramList.add(appBallance.getLatestBtcBalance());
+		paramList.add(appBallance.getLatestLtcBalance());
 		paramList.add(appBallance.getId());
 		return Db.executeUpdate(sql, paramList.toArray());
 	}
