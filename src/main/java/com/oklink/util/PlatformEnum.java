@@ -35,7 +35,7 @@ public enum PlatformEnum {
 		public String getTokenUri(){
 			return this.getHost()+"/oauth/token.do";
 		}
-		public String getBallanceUri(){
+		public String getBalanceUri(){
 			return this.getApiHost()+"/api/v1/wallets";
 		}
 	},
@@ -67,7 +67,7 @@ public enum PlatformEnum {
 		public String getTokenUri(){
 			return this.getHost()+"/oauth/token";
 		}
-		public String getBallanceUri(){
+		public String getBalanceUri(){
 			return this.getApiHost()+"/v1/account/balance";
 		}
 	};
@@ -118,5 +118,5 @@ public enum PlatformEnum {
 	//第三方平台申请access_token地址
 	public abstract String getTokenUri();
 	//api 查看余额地址
-	public abstract String getBallanceUri();
+	public abstract String getBalanceUri();
 }
