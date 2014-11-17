@@ -25,7 +25,7 @@ import com.oklink.api.OKLinkBuilder;
 import com.oklink.api.bean.Amount;
 import com.oklink.api.bean.UserBalance;
 import com.oklink.api.bean.Wallet;
-import com.oklink.dao.bean.AppBallance;
+import com.oklink.dao.bean.AppBalance;
 import com.oklink.dao.bean.AppToken;
 import com.oklink.dao.bean.AppUser;
 import com.oklink.service.token.TokenService;
@@ -59,33 +59,33 @@ public class TokenController extends MultiActionController {
 		}
 		
 		//查询已授权的余额信息
-		Map<String,List<AppBallance>> appBallanceMap = new HashMap<String,List<AppBallance>>();
+		Map<String,List<AppBalance>> appBalanceMap = new HashMap<String,List<AppBalance>>();
 		List<AppToken> appTokenList = tokenService.getAppTokenListByUserId(userId);
 		if(appTokenList!=null&&appTokenList.size()>0){
-			AppBallance appBallance = null;
-			List<AppBallance> okcoinAppBallanceList = new ArrayList<AppBallance>();
-			List<AppBallance> coinbaseAppBallanceList = new ArrayList<AppBallance>();
+			AppBalance appBalance = null;
+			List<AppBalance> okcoinAppBalanceList = new ArrayList<AppBalance>();
+			List<AppBalance> coinbaseAppBalanceList = new ArrayList<AppBalance>();
 			for(AppToken appToken : appTokenList){
 				int code = appToken.getCode();
 				switch (code) {
 					case PlatformConstans.OKCOIN_CODE:
-						appBallance = getOKLinkBallanceList(userId, code, filterAccessToken(appToken));
-						if(appBallance!=null){
-							okcoinAppBallanceList.add(appBallance);
+						appBalance = getOKLinkBalanceList(userId, code, filterAccessToken(appToken));
+						if(appBalance!=null){
+							okcoinAppBalanceList.add(appBalance);
 						}
 						break;
 					case PlatformConstans.COINBASE_CODE:
-						appBallance = getCoinbaseBallanceList(userId, code, filterAccessToken(appToken));
-						if(appBallance!=null){
-							coinbaseAppBallanceList.add(appBallance);
+						appBalance = getCoinbaseBalanceList(userId, code, filterAccessToken(appToken));
+						if(appBalance!=null){
+							coinbaseAppBalanceList.add(appBalance);
 						}
 						break;
 				}
 			}
-			appBallanceMap.put(PlatformEnum.OKLINK.getName(), okcoinAppBallanceList);
-			appBallanceMap.put(PlatformEnum.COINBASE.getName(), coinbaseAppBallanceList);
+			appBalanceMap.put(PlatformEnum.OKLINK.getName(), okcoinAppBalanceList);
+			appBalanceMap.put(PlatformEnum.COINBASE.getName(), coinbaseAppBalanceList);
 		}
-		request.setAttribute("appBallanceMap", appBallanceMap);
+		request.setAttribute("appBalanceMap", appBalanceMap);
 		return "token/index";
 	}
 
@@ -95,11 +95,11 @@ public class TokenController extends MultiActionController {
 	 * @param code
 	 * @return
 	 */
-	public AppBallance getOKLinkBallanceList(long userId,int code,String accessToken){
+	public AppBalance getOKLinkBalanceList(long userId,int code,String accessToken){
 		if(StringUtil.isEmpty(accessToken)){
 			return null;
 		}
-		AppBallance appBallance = null;
+		AppBalance appBalance = null;
 		OKLink oklink = new OKLinkBuilder().withAccessToken(accessToken).build();
 		if(oklink == null){
 			return null;
@@ -107,37 +107,37 @@ public class TokenController extends MultiActionController {
 		try {
 			//子钱包明细
 			UserBalance userBalance = oklink.getUserBalance();
-			List<AppBallance> appBallanceList = null;
+			List<AppBalance> appBalanceList = null;
 			List<Wallet> wallets = userBalance.getWalletBalances();
 			if(wallets!=null&&wallets.size()>0){
-				appBallanceList = new ArrayList<AppBallance>();
+				appBalanceList = new ArrayList<AppBalance>();
 				for(Wallet wallet : wallets){
-					appBallance = new AppBallance();
-					appBallance.setUserId(userId);
-					appBallance.setCode(PlatformEnum.OKLINK.getCode());
-					appBallance.setObjectId(String.valueOf(wallet.getId()));
-					appBallance.setObjectName(wallet.getName());
-					appBallance.setLatestBtcBallance(wallet.getBtcBalance().getAmount());
-					appBallance.setLatestLtcBallance(wallet.getLtcBalance().getAmount());
-					appBallanceList.add(appBallance);
+					appBalance = new AppBalance();
+					appBalance.setUserId(userId);
+					appBalance.setCode(PlatformEnum.OKLINK.getCode());
+					appBalance.setObjectId(String.valueOf(wallet.getId()));
+					appBalance.setObjectName(wallet.getName());
+					appBalance.setLatestBtcBalance(wallet.getBtcBalance().getAmount());
+					appBalance.setLatestLtcBalance(wallet.getLtcBalance().getAmount());
+					appBalanceList.add(appBalance);
 				}
 			}
 			//钱包总余额
 			Amount totalBtcBalance = userBalance.getTotalBtcBalance();
 			Amount totalLtcBalance = userBalance.getTotalLtcBalance();
-			appBallance = new AppBallance();
-			appBallance.setUserId(userId);
-			appBallance.setCode(PlatformEnum.OKLINK.getCode());
-			appBallance.setParentId(-1);
-			appBallance.setObjectId(PlatformEnum.OKLINK.getName());
-			appBallance.setObjectName(PlatformEnum.OKLINK.getName());
-			appBallance.setLatestBtcBallance(totalBtcBalance.getAmount());
-			appBallance.setLatestLtcBallance(totalLtcBalance.getAmount());
-			appBallance.setAppBallanceList(appBallanceList);
+			appBalance = new AppBalance();
+			appBalance.setUserId(userId);
+			appBalance.setCode(PlatformEnum.OKLINK.getCode());
+			appBalance.setParentId(-1);
+			appBalance.setObjectId(PlatformEnum.OKLINK.getName());
+			appBalance.setObjectName(PlatformEnum.OKLINK.getName());
+			appBalance.setLatestBtcBalance(totalBtcBalance.getAmount());
+			appBalance.setLatestLtcBalance(totalLtcBalance.getAmount());
+			appBalance.setAppBalanceList(appBalanceList);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		return appBallance;
+		return appBalance;
 	}
 	
 	/**
@@ -147,52 +147,52 @@ public class TokenController extends MultiActionController {
 	 * @param code
 	 * @return
 	 */
-	public AppBallance getCoinbaseBallanceList(long userId,int code,String accessToken){
+	public AppBalance getCoinbaseBalanceList(long userId,int code,String accessToken){
 		if(StringUtil.isEmpty(accessToken)){
 			return null;
 		}
-		AppBallance appBallance = null;
+		AppBalance appBalance = null;
 		Coinbase boinbase = new CoinbaseBuilder().withAccessToken(accessToken).build();
 		if(boinbase == null){
 			return null;
 		}
 		try {
 			//子钱包明细
-			List<AppBallance> appBallanceList = null;
+			List<AppBalance> appBalanceList = null;
 			AccountsResponse r = boinbase.getAccounts();
 	        List<Account> accounts = r.getAccounts();
 	        if(accounts!=null&&accounts.size()>0){
-				appBallanceList = new ArrayList<AppBallance>();
+				appBalanceList = new ArrayList<AppBalance>();
 		        for(Account account : accounts){
 		        	if(Account.Type.WALLET.equals(account.getType())&&account.isActive()){
-		        		appBallance = new AppBallance();
-						appBallance.setUserId(userId);
-						appBallance.setCode(PlatformEnum.COINBASE.getCode());
-						appBallance.setObjectId(account.getId());
-						appBallance.setObjectName(account.getName());
-						appBallance.setLatestBtcBallance(account.getBalance().getAmount().doubleValue());
-						appBallance.setLatestLtcBallance(0);
-						appBallanceList.add(appBallance);
+		        		appBalance = new AppBalance();
+						appBalance.setUserId(userId);
+						appBalance.setCode(PlatformEnum.COINBASE.getCode());
+						appBalance.setObjectId(account.getId());
+						appBalance.setObjectName(account.getName());
+						appBalance.setLatestBtcBalance(account.getBalance().getAmount().doubleValue());
+						appBalance.setLatestLtcBalance(0);
+						appBalanceList.add(appBalance);
 		        	}
 		        }
 	        }
 	        //钱包总余额
 	        User user = boinbase.getUser();
 	        Money money = user.getBalance();
-	        appBallance = new AppBallance();
-			appBallance.setUserId(userId);
-			appBallance.setCode(PlatformEnum.COINBASE.getCode());
-			appBallance.setParentId(-1);
-			appBallance.setObjectId(PlatformEnum.COINBASE.getName());
-			appBallance.setObjectName(PlatformEnum.COINBASE.getName());
+	        appBalance = new AppBalance();
+			appBalance.setUserId(userId);
+			appBalance.setCode(PlatformEnum.COINBASE.getCode());
+			appBalance.setParentId(-1);
+			appBalance.setObjectId(PlatformEnum.COINBASE.getName());
+			appBalance.setObjectName(PlatformEnum.COINBASE.getName());
 			
-			appBallance.setLatestBtcBallance(money.getAmount().doubleValue());
-			appBallance.setLatestLtcBallance(0);
-			appBallance.setAppBallanceList(appBallanceList);
+			appBalance.setLatestBtcBalance(money.getAmount().doubleValue());
+			appBalance.setLatestLtcBalance(0);
+			appBalance.setAppBalanceList(appBalanceList);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		return appBallance;
+		return appBalance;
 	}
 	
 	/**
@@ -214,13 +214,13 @@ public class TokenController extends MultiActionController {
 		String newAccessToken = null;
 		JSONObject jsonObject = JSONObject.parseObject(result);
 		if(jsonObject!=null&&jsonObject.containsKey("access_token")&&jsonObject.containsKey("expires_in")&&jsonObject.containsKey("refresh_token")){
-			AppToken updateAppToken = new AppToken();
-			updateAppToken.setAccessToken(jsonObject.getString("access_token"));
-			updateAppToken.setRefreshToken(jsonObject.getString("refresh_token"));
-			updateAppToken.setExpiresIn(jsonObject.getLongValue("expires_in"));
-			long value = tokenService.updateAppToken(updateAppToken);
+			//覆盖之前的token
+			appToken.setAccessToken(jsonObject.getString("access_token"));
+			appToken.setRefreshToken(jsonObject.getString("refresh_token"));
+			appToken.setExpiresIn(jsonObject.getLongValue("expires_in"));
+			long value = tokenService.updateAppToken(appToken);
 			if(value>0){
-				newAccessToken = updateAppToken.getAccessToken();
+				newAccessToken = appToken.getAccessToken();
 			}else{
 				//抛异常
 			}
