@@ -23,7 +23,7 @@ public class AppBalance implements Serializable {
 	private String objectName;	//第三方平台的钱包名称（用于页面显示）
 	private double latestBtcBalance;
 	private double latestLtcBalance;
-	private List<AppBalance> appBallanceList;
+	private List<AppBalance> appBalanceList;
 	
 	public long getId() {
 		return id;
@@ -74,10 +74,10 @@ public class AppBalance implements Serializable {
 		this.latestLtcBalance = latestLtcBalance;
 	}
 	public List<AppBalance> getAppBalanceList() {
-		return appBallanceList;
+		return appBalanceList;
 	}
-	public void setAppBalanceList(List<AppBalance> appBallanceList) {
-		this.appBallanceList = appBallanceList;
+	public void setAppBalanceList(List<AppBalance> appBalanceList) {
+		this.appBalanceList = appBalanceList;
 	}
 	
 	public static AppBalance convert(Map<String, Object> map) {

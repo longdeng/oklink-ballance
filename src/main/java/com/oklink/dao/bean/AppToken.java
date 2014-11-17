@@ -111,7 +111,7 @@ public class AppToken implements Serializable {
 	 */
 	public boolean isAccessTokenExpireIn() {
 		//由于无法获取服务器token创建时间，客户端验证token过期时把时间进行压缩
-		if((this.modifyDate.getTime()+this.expiresIn*1000+PlatformConstans.OAUTH_ACCESSTOKEN_COMPRESS_TIME)<=new Date().getTime()){
+		if((this.modifyDate.getTime()+this.expiresIn*1000+PlatformConstans.OAUTH_ACCESSTOKEN_COMPRESS_TIME)>=new Date().getTime()){
 			return true;
 		}
 		return false;
