@@ -13,6 +13,7 @@ import org.springframework.web.servlet.mvc.multiaction.MultiActionController;
 import com.oklink.controller.bean.Result;
 import com.oklink.dao.bean.AppUser;
 import com.oklink.service.user.UserService;
+import com.oklink.util.HttpSessionUtil;
 /**
  * @author longdeng.zhang@gmail.com
  * @version 创建时间：2014-11-5 上午11:11:06
@@ -46,6 +47,8 @@ public class UserController extends MultiActionController {
 		String password = request.getParameter("password");
 		AppUser appUser = userService.getAppUserByEmail(email);
 		if(appUser!=null&&appUser.getPassword().equals(DigestUtils.md5Hex(password))){
+			//登录成功把user放入session中
+			HttpSessionUtil.setUserSession(request, appUser);
 			result.setResultCode(0);
 			out.print(result);
 			return null;
@@ -75,6 +78,8 @@ public class UserController extends MultiActionController {
 		appUser.setPassword(DigestUtils.md5Hex(password));
 		long value = userService.insertAppUser(appUser);
 		if(value > 0){
+			//登录成功把user放入session中
+			HttpSessionUtil.setUserSession(request, appUser);
 			result.setResultCode(0);
 			out.print(result);
 			return null;

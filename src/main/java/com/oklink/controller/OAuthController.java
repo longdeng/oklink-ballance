@@ -18,6 +18,7 @@ import com.oklink.dao.bean.AppUser;
 import com.oklink.service.token.TokenService;
 import com.oklink.util.HttpClientUtil;
 import com.oklink.util.HttpMethodEnum;
+import com.oklink.util.HttpSessionUtil;
 import com.oklink.util.Logs;
 import com.oklink.util.PlatformConstans;
 import com.oklink.util.PlatformEnum;
@@ -42,11 +43,16 @@ public class OAuthController extends MultiActionController {
 	 * @return
 	 * @throws Exception
 	 */
-	public String authorize(HttpServletRequest request, HttpServletResponse response)
-			throws Exception {
+	public String authorize(HttpServletRequest request, HttpServletResponse response)throws Exception {
+		AppUser appUser = HttpSessionUtil.getUserFromSession(request);
+		if(appUser==null){
+			Logs.geterrorLogger().error("OAuthController authorize ： user is null");
+			return "redirect:/?forward="+StringUtil.UrlEncoder("/user/index.do");
+		}
 		int code = StringUtil.toInteger(request.getParameter("code"),-1);
 		if(!PlatformEnum.isPlatformEnumCode(code)){
-			return null;
+			Logs.geterrorLogger().error("OAuthController authorize ： code is not invalid");
+			return "redirect:/?forward="+StringUtil.UrlEncoder("/user/index.do");
 		}
 		PlatformEnum platformEnum = PlatformEnum.getPlatformEnumByCode(code);
 		String url = platformEnum.getAuthorizeUri()+"?response_type=code&client_id="+platformEnum.getClientId()+"&redirect_uri="+StringUtil.UrlEncoder(platformEnum.getRedirectUri());
@@ -62,36 +68,44 @@ public class OAuthController extends MultiActionController {
 	 */
 	public String token(HttpServletRequest request, HttpServletResponse response)
 			throws Exception {
-		AppUser appUser = new AppUser();
-		appUser.setId(1);
-		
+		AppUser appUser = HttpSessionUtil.getUserFromSession(request);
+		if(appUser==null){
+			Logs.geterrorLogger().error("OAuthController token ： user is null");
+			return "redirect:/?forward="+StringUtil.UrlEncoder("/user/index.do");
+		}
 		String code = request.getParameter("code");
 		int type = StringUtil.toInteger(request.getParameter("type"),-1);
 		if(StringUtil.isEmpty(code)||!PlatformEnum.isPlatformEnumCode(type)){
-			return null;
+			Logs.geterrorLogger().error("OAuthController token ： code is not invalid");
+			return "redirect:/?forward="+StringUtil.UrlEncoder("/user/index.do");
 		}
 		PlatformEnum platformEnum = PlatformEnum.getPlatformEnumByCode(type);
 		String url = platformEnum.getTokenUri()+"?grant_type=authorization_code&code="+code+"&redirect_uri="+StringUtil.UrlEncoder(platformEnum.getRedirectUri())+"&client_id="+platformEnum.getClientId()+"&client_secret="+platformEnum.getClientSecret();
 		String result = HttpClientUtil.send(url, HttpMethodEnum.POST);
 		if(StringUtil.isEmpty(result)){
-			return null;
+			Logs.geterrorLogger().error("OAuthController token ： HttpClientUtil send error ");
+			return "redirect:/?forward="+StringUtil.UrlEncoder("/user/index.do");
 		}
 		JSONObject jsonObject = JSONObject.parseObject(result);
 		if(jsonObject!=null&&jsonObject.containsKey("access_token")&&jsonObject.containsKey("expires_in")&&jsonObject.containsKey("refresh_token")){
 			//获取用户标识
 			String objectId = "";
 			String accessToken = jsonObject.getString("access_token");
-			switch (type) {
-				case PlatformConstans.OKCOIN_CODE:
-					OKLink oklink = new OKLinkBuilder().withAccessToken(accessToken).build();
-					objectId = String.valueOf(oklink.getUser().getId());
-					break;
-				case PlatformConstans.COINBASE_CODE:
-					Coinbase boinbase = new CoinbaseBuilder().withAccessToken(accessToken).build();
-					objectId = boinbase.getUser().getId();
-					break;
+			try{
+				switch (type) {
+					case PlatformConstans.OKCOIN_CODE:
+						OKLink oklink = new OKLinkBuilder().withAccessToken(accessToken).setHost(PlatformEnum.OKLINK.getApiHost()).build();
+						objectId = String.valueOf(oklink.getUser().getId());
+						break;
+					case PlatformConstans.COINBASE_CODE:
+						Coinbase boinbase = new CoinbaseBuilder().withAccessToken(accessToken).build();
+						objectId = boinbase.getUser().getId();
+						break;
+				}
+			}catch(Exception e){
+				Logs.getinfoLogger().error("OAuthController token:	objectId obtain error",e);
+				return "redirect:/token/index.do";
 			}
-			Logs.getinfoLogger().error("OAuthController token:	objectId="+objectId);
 			//更新数据token信息
 			long value = 0;
 			AppToken appToken = tokenService.getAppToken(appUser.getId(), type, objectId);

@@ -21,13 +21,13 @@ public enum PlatformEnum {
 			return "33e90c387643b37ebf50bae803c2b67538842b96dd43504d1768b2f15f0baf72";
 		}
 		public String getRedirectUri(){
-			return "http://local.oklink.com:90/oauth/token.do?type=0";
+			return "http://local.oklink.com:9000/oauth/token.do?type=0";
 		}
 		public String getHost(){
-			return "http://local.oklink.com";
+			return "http://localtest.oklink.com";
 		}
 		public String getApiHost(){
-			return "http://local.oklink.com";
+			return "http://192.168.0.235";
 		}
 		public String getAuthorizeUri(){
 			return this.getHost()+"/oauth/authorize.do";

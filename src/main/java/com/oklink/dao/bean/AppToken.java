@@ -5,6 +5,7 @@ import java.util.Date;
 import java.util.Map;
 
 import com.alibaba.fastjson.JSON;
+import com.oklink.util.Logs;
 import com.oklink.util.PlatformConstans;
 import com.oklink.util.StringUtil;
 
@@ -110,10 +111,23 @@ public class AppToken implements Serializable {
 	 * 验证accessToken是否已经过期
 	 */
 	public boolean isAccessTokenExpireIn() {
+		long modifytime = this.modifyDate.getTime();
+		long expiretime = this.expiresIn*1000;
+		long compresstime = PlatformConstans.OAUTH_ACCESSTOKEN_COMPRESS_TIME;
+		long totaltime = modifytime + expiretime + compresstime;
+		long currenttime = System.currentTimeMillis();
+		StringBuilder sb = new StringBuilder();
+		sb.append("modifytime=").append(modifytime).append(";");
+		sb.append("expiretime=").append(expiretime).append(";");
+		sb.append("compresstime=").append(compresstime).append(";");
+		sb.append("totaltime=").append(totaltime).append(";");
+		sb.append("currenttime=").append(currenttime).append(";");
 		//由于无法获取服务器token创建时间，客户端验证token过期时把时间进行压缩
-		if((this.modifyDate.getTime()+this.expiresIn*1000+PlatformConstans.OAUTH_ACCESSTOKEN_COMPRESS_TIME)>=new Date().getTime()){
+		if(totaltime<=currenttime){
+			Logs.getinfoLogger().error("AppToken isAccessTokenExpireIn is expire : " + sb.toString());
 			return true;
 		}
+		Logs.getinfoLogger().error("AppToken isAccessTokenExpireIn is not expire : " + sb.toString());
 		return false;
 	}
 	

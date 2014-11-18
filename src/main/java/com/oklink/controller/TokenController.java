@@ -32,6 +32,7 @@ import com.oklink.service.token.TokenService;
 import com.oklink.service.user.UserService;
 import com.oklink.util.HttpClientUtil;
 import com.oklink.util.HttpMethodEnum;
+import com.oklink.util.Logs;
 import com.oklink.util.PlatformConstans;
 import com.oklink.util.PlatformEnum;
 import com.oklink.util.StringUtil;
@@ -50,12 +51,16 @@ public class TokenController extends MultiActionController {
 	@Autowired
 	private TokenService tokenService;
 
-	public String index(HttpServletRequest request, HttpServletResponse response)
-			throws Exception {
-		long userId = StringUtil.toLong(request.getParameter("userId"), 1l);
+	public String index(HttpServletRequest request, HttpServletResponse response) throws Exception {
+		long userId = StringUtil.toLong(request.getParameter("userId"), -1L);
+		if(userId < 0){
+			Logs.geterrorLogger().error("TokenController index ： userId is null");
+			return "redirect:/?forward="+StringUtil.UrlEncoder("/user/index.do");
+		}
 		AppUser appUser = userService.getAppUserById(userId);
 		if(appUser == null){
-			return null;
+			Logs.geterrorLogger().error("TokenController index ： user is null");
+			return "redirect:/?forward="+StringUtil.UrlEncoder("/user/index.do");
 		}
 		
 		//查询已授权的余额信息
@@ -97,11 +102,13 @@ public class TokenController extends MultiActionController {
 	 */
 	public AppBalance getOKLinkBalanceList(long userId,int code,String accessToken){
 		if(StringUtil.isEmpty(accessToken)){
+			Logs.geterrorLogger().error("TokenController getOKLinkBalanceList ： accessToken is empty");
 			return null;
 		}
 		AppBalance appBalance = null;
-		OKLink oklink = new OKLinkBuilder().withAccessToken(accessToken).build();
+		OKLink oklink = new OKLinkBuilder().withAccessToken(accessToken).setHost(PlatformEnum.OKLINK.getApiHost()).build();
 		if(oklink == null){
+			Logs.geterrorLogger().error("TokenController getOKLinkBalanceList ： oklink is empty");
 			return null;
 		}
 		try {
@@ -117,8 +124,8 @@ public class TokenController extends MultiActionController {
 					appBalance.setCode(PlatformEnum.OKLINK.getCode());
 					appBalance.setObjectId(String.valueOf(wallet.getId()));
 					appBalance.setObjectName(wallet.getName());
-					appBalance.setLatestBtcBalance(wallet.getBtcBalance().getAmount());
-					appBalance.setLatestLtcBalance(wallet.getLtcBalance().getAmount());
+					appBalance.setLatestBtcBalance(wallet.getBtcBalance().getAmount().doubleValue());
+					appBalance.setLatestLtcBalance(wallet.getLtcBalance().getAmount().doubleValue());
 					appBalanceList.add(appBalance);
 				}
 			}
@@ -131,8 +138,8 @@ public class TokenController extends MultiActionController {
 			appBalance.setParentId(-1);
 			appBalance.setObjectId(PlatformEnum.OKLINK.getName());
 			appBalance.setObjectName(PlatformEnum.OKLINK.getName());
-			appBalance.setLatestBtcBalance(totalBtcBalance.getAmount());
-			appBalance.setLatestLtcBalance(totalLtcBalance.getAmount());
+			appBalance.setLatestBtcBalance(totalBtcBalance.getAmount().doubleValue());
+			appBalance.setLatestLtcBalance(totalLtcBalance.getAmount().doubleValue());
 			appBalance.setAppBalanceList(appBalanceList);
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -149,11 +156,13 @@ public class TokenController extends MultiActionController {
 	 */
 	public AppBalance getCoinbaseBalanceList(long userId,int code,String accessToken){
 		if(StringUtil.isEmpty(accessToken)){
+			Logs.geterrorLogger().error("TokenController getCoinbaseBalanceList ： accessToken is empty");
 			return null;
 		}
 		AppBalance appBalance = null;
 		Coinbase boinbase = new CoinbaseBuilder().withAccessToken(accessToken).build();
 		if(boinbase == null){
+			Logs.geterrorLogger().error("TokenController getCoinbaseBalanceList ： boinbase is empty");
 			return null;
 		}
 		try {
@@ -208,6 +217,7 @@ public class TokenController extends MultiActionController {
 		String url = platformEnum.getTokenUri()+"?grant_type=refresh_token&refresh_token="+appToken.getRefreshToken()+"&redirect_uri="+StringUtil.UrlEncoder(platformEnum.getRedirectUri())+"&client_id="+platformEnum.getClientId()+"&client_secret="+platformEnum.getClientSecret();
 		String result = HttpClientUtil.send(url, HttpMethodEnum.POST);
 		if(StringUtil.isEmpty(result)){
+			Logs.geterrorLogger().error("TokenController filterAccessToken ： HttpClientUtil send error!result is empty");
 			return null;
 		}
 		//新token
@@ -221,8 +231,10 @@ public class TokenController extends MultiActionController {
 			long value = tokenService.updateAppToken(appToken);
 			if(value>0){
 				newAccessToken = appToken.getAccessToken();
+				Logs.geterrorLogger().error("TokenController filterAccessToken ： newAccessToken request success!");
 			}else{
 				//抛异常
+				Logs.geterrorLogger().error("TokenController filterAccessToken ： newAccessToken request failure!");
 			}
 		}
 		return newAccessToken;
