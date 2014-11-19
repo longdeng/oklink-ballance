@@ -32,6 +32,7 @@ import com.oklink.service.token.TokenService;
 import com.oklink.service.user.UserService;
 import com.oklink.util.HttpClientUtil;
 import com.oklink.util.HttpMethodEnum;
+import com.oklink.util.HttpSessionUtil;
 import com.oklink.util.Logs;
 import com.oklink.util.PlatformConstans;
 import com.oklink.util.PlatformEnum;
@@ -52,12 +53,7 @@ public class TokenController extends MultiActionController {
 	private TokenService tokenService;
 
 	public String index(HttpServletRequest request, HttpServletResponse response) throws Exception {
-		long userId = StringUtil.toLong(request.getParameter("userId"), -1L);
-		if(userId < 0){
-			Logs.geterrorLogger().error("TokenController index ： userId is null");
-			return "redirect:/?forward="+StringUtil.UrlEncoder("/user/index.do");
-		}
-		AppUser appUser = userService.getAppUserById(userId);
+		AppUser appUser = HttpSessionUtil.getUserFromSession(request);
 		if(appUser == null){
 			Logs.geterrorLogger().error("TokenController index ： user is null");
 			return "redirect:/?forward="+StringUtil.UrlEncoder("/user/index.do");
@@ -65,7 +61,7 @@ public class TokenController extends MultiActionController {
 		
 		//查询已授权的余额信息
 		Map<String,List<AppBalance>> appBalanceMap = new HashMap<String,List<AppBalance>>();
-		List<AppToken> appTokenList = tokenService.getAppTokenListByUserId(userId);
+		List<AppToken> appTokenList = tokenService.getAppTokenListByUserId(appUser.getId());
 		if(appTokenList!=null&&appTokenList.size()>0){
 			AppBalance appBalance = null;
 			List<AppBalance> okcoinAppBalanceList = new ArrayList<AppBalance>();
@@ -74,13 +70,13 @@ public class TokenController extends MultiActionController {
 				int code = appToken.getCode();
 				switch (code) {
 					case PlatformConstans.OKCOIN_CODE:
-						appBalance = getOKLinkBalanceList(userId, code, filterAccessToken(appToken));
+						appBalance = getOKLinkBalanceList(appUser.getId(), code, filterAccessToken(appToken));
 						if(appBalance!=null){
 							okcoinAppBalanceList.add(appBalance);
 						}
 						break;
 					case PlatformConstans.COINBASE_CODE:
-						appBalance = getCoinbaseBalanceList(userId, code, filterAccessToken(appToken));
+						appBalance = getCoinbaseBalanceList(appUser.getId(), code, filterAccessToken(appToken));
 						if(appBalance!=null){
 							coinbaseAppBalanceList.add(appBalance);
 						}
