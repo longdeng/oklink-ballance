@@ -15,19 +15,19 @@ public enum PlatformEnum {
 			return "OKLINK";
 		}
 		public String getClientId(){
-			return "ba0bb9e1ca317288d08a99038c989d34634d2501741f3651d3c5251695bd6fc9";
+			return OKLinkConstants.OKLINK_CLIENT_ID;
 		}
 		public String getClientSecret(){
-			return "33e90c387643b37ebf50bae803c2b67538842b96dd43504d1768b2f15f0baf72";
+			return OKLinkConstants.OKLINK_CLIENT_SECRET;
 		}
 		public String getRedirectUri(){
-			return "http://local.oklink.com:9000/oauth/token.do?type=0";
+			return OKLinkConstants.OKLINK_REDIRECT_URI;
 		}
 		public String getHost(){
-			return "http://localtest.oklink.com";
+			return OKLinkConstants.OKLINK_HOST_HOME;
 		}
 		public String getApiHost(){
-			return "http://192.168.0.235";
+			return OKLinkConstants.OKLINK_HOST_API;
 		}
 		public String getAuthorizeUri(){
 			return this.getHost()+"/oauth/authorize.do";
@@ -47,19 +47,19 @@ public enum PlatformEnum {
 			return "COINBASE";
 		}
 		public String getClientId(){
-			return "16119303307e6ba0c78a280e6734311cd658e2bfebde252ed3fed59fc5ee9fc8";
+			return OKLinkConstants.COINBASE_CLIENT_ID;
 		}
 		public String getClientSecret(){
-			return "c5266a9cd74da0a449a92ca303769c66de2a7dd2ae7b024259b99d5fb1306cc0";
+			return OKLinkConstants.COINBASE_CLIENT_SECRET;
 		}
 		public String getRedirectUri(){
-			return "http://local.oklink.com/oauth/token.do?type=1";
+			return OKLinkConstants.COINBASE_REDIRECT_URI;
 		}
 		public String getHost(){
-			return "https://www.coinbase.com";
+			return OKLinkConstants.COINBASE_HOST_HOME;
 		}
 		public String getApiHost(){
-			return "https://api.coinbase.com";
+			return OKLinkConstants.COINBASE_HOST_API;
 		}
 		public String getAuthorizeUri(){
 			return this.getHost()+"/oauth/authorize";
@@ -109,14 +109,14 @@ public enum PlatformEnum {
 	public abstract String getClientSecret();
 	//第三方平台注册的redirectUri
 	public abstract String getRedirectUri();
-	//第三方平台oauth认证地址
+	//第三方平台OAUTH认证地址
 	public abstract String getHost();
-	//第三方平台api调用地址
+	//第三方平台API调用地址
 	public abstract String getApiHost();
 	//第三方平台申请code地址
 	public abstract String getAuthorizeUri();
 	//第三方平台申请access_token地址
 	public abstract String getTokenUri();
-	//api 查看余额地址
+	//API查看余额地址
 	public abstract String getBalanceUri();
 }

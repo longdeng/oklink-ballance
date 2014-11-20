@@ -16,7 +16,7 @@ public class WebUtil {
 	 */
 	public static String getSuffix(HttpServletRequest request){
 		String name = request.getHeader("host");
-		String domain = OklinkConstants.cookie_domain;
+		String domain = OKLinkConstants.cookie_domain;
 		if(name !=null && name.split("[.]").length>2){
 			String[] arr = name.split("[.]");
 			domain = "."+arr[2];
@@ -27,13 +27,13 @@ public class WebUtil {
 		return domain;
 	}
 	public static String getPreUrl(HttpServletRequest request ){
-		String preUrl = OklinkConstants.preUrl ;
+		String preUrl = OKLinkConstants.preUrl ;
 		String scheme = StringUtil.isEmpty(request.getHeader("X-Forwarded-Proto"))?request.getScheme():request.getHeader("X-Forwarded-Proto");
 		//根据当前host更改后缀 .cn or .com
 		if("https".equals(scheme)){
-			preUrl= "https"+ OklinkConstants.preUrl.substring(OklinkConstants.preUrl.indexOf(":"),OklinkConstants.preUrl.length());
+			preUrl= "https"+ OKLinkConstants.preUrl.substring(OKLinkConstants.preUrl.indexOf(":"),OKLinkConstants.preUrl.length());
 		}else{
-			preUrl= "http"+ OklinkConstants.preUrl.substring(OklinkConstants.preUrl.indexOf(":"),OklinkConstants.preUrl.length());
+			preUrl= "http"+ OKLinkConstants.preUrl.substring(OKLinkConstants.preUrl.indexOf(":"),OKLinkConstants.preUrl.length());
 		}
 		return preUrl;
 	}
@@ -129,13 +129,13 @@ public class WebUtil {
 			for(int i=0;i<cookies.length;i++){
 				String value=cookies[i].getValue();
 				if(value!=null && value.trim().length()>0 && !value.equals("null")){
-					if(cookies[i].getName().equals(OklinkConstants.cookie_session_name)){
+					if(cookies[i].getName().equals(OKLinkConstants.cookie_session_name)){
 						cbean.setCoin_session_id(value);
-					}else if(cookies[i].getName().equals(OklinkConstants.cookie_session_nike_name)){
+					}else if(cookies[i].getName().equals(OKLinkConstants.cookie_session_nike_name)){
 						cbean.setNikeName(StringUtil.UrlDecoder(value));
-					}else if(cookies[i].getName().equals(OklinkConstants.cookie_session_login_info)){
+					}else if(cookies[i].getName().equals(OKLinkConstants.cookie_session_login_info)){
 						cbean.setLoginInfo(StringUtil.UrlDecoder(value));
-					}else if(cookies[i].getName().equals(OklinkConstants.cookie_user_id)){
+					}else if(cookies[i].getName().equals(OKLinkConstants.cookie_user_id)){
 						cbean.setUserid(StringUtil.UrlDecoder(value));
 					}
 				}
@@ -150,7 +150,7 @@ public class WebUtil {
 	/**获取客户端的主机根域名*/
 	public static String getDomain(HttpServletRequest request){
 		String name = request.getHeader("host");
-		String domain = OklinkConstants.cookie_domain;
+		String domain = OKLinkConstants.cookie_domain;
 		if(name !=null && name.split("[.]").length>2){
 			String[] arr = name.split("[.]");
 			domain = arr[1]+"."+arr[2];
@@ -161,7 +161,7 @@ public class WebUtil {
 	public static void setCookieBean(HttpServletResponse res , CookieBean cBean,String domain){
 		if(cBean!=null){
 			if(cBean.getCoin_session_id()!=null && cBean.getCoin_session_id().trim().length()>0 && !cBean.getCoin_session_id().trim().equals("null")){
-				Cookie cookie_session_id=new Cookie(OklinkConstants.cookie_session_name,cBean.getCoin_session_id());
+				Cookie cookie_session_id=new Cookie(OKLinkConstants.cookie_session_name,cBean.getCoin_session_id());
 				cookie_session_id.setPath("/");
 				//cookie_session_id.setMaxAge(CoinOkConstants.cookie_session_id_time);
 				cookie_session_id.setDomain(domain);
@@ -173,21 +173,21 @@ public class WebUtil {
 				res.addCookie(cookie_session_id);
 			}
 			if(cBean.getLoginInfo()!=null&&cBean.getLoginInfo().trim().length()>0&&!cBean.getLoginInfo().trim().equals("null")){
-				Cookie cookie_loginName=new Cookie(OklinkConstants.cookie_session_login_info,StringUtil.UrlEncoder(cBean.getLoginInfo()));
+				Cookie cookie_loginName=new Cookie(OKLinkConstants.cookie_session_login_info,StringUtil.UrlEncoder(cBean.getLoginInfo()));
 				cookie_loginName.setPath("/");
-				cookie_loginName.setMaxAge(OklinkConstants.cookie_session_id_time);
+				cookie_loginName.setMaxAge(OKLinkConstants.cookie_session_id_time);
 				cookie_loginName.setDomain(domain);
 				res.addCookie(cookie_loginName);
 			}
 			if(cBean.getNikeName()!=null&&cBean.getNikeName().trim().length()>0&&!cBean.getNikeName().trim().equals("null")){
-				Cookie cookie_nikeName=new Cookie(OklinkConstants.cookie_session_nike_name,StringUtil.UrlEncoder(cBean.getNikeName()));
+				Cookie cookie_nikeName=new Cookie(OKLinkConstants.cookie_session_nike_name,StringUtil.UrlEncoder(cBean.getNikeName()));
 				cookie_nikeName.setPath("/");
-				cookie_nikeName.setMaxAge(OklinkConstants.cookie_session_id_time);
+				cookie_nikeName.setMaxAge(OKLinkConstants.cookie_session_id_time);
 				cookie_nikeName.setDomain(domain);
 				res.addCookie(cookie_nikeName);
 			}
 			if(cBean.getUserid()!=null&&cBean.getUserid().trim().length()>0&&!cBean.getUserid().trim().equals("null")){
-				Cookie userid=new Cookie(OklinkConstants.cookie_user_id,StringUtil.UrlEncoder(cBean.getUserid()));
+				Cookie userid=new Cookie(OKLinkConstants.cookie_user_id,StringUtil.UrlEncoder(cBean.getUserid()));
 				userid.setPath("/");
 				userid.setDomain(domain);
 				String ifonline=IniReader.getInstance(2).getValue("onlinesys", "ifonline");
@@ -200,7 +200,7 @@ public class WebUtil {
 	}
 	
 	public static String getMainUrl(HttpServletRequest request ){
-		String mainUrl = OklinkConstants.mainUrl ;
+		String mainUrl = OKLinkConstants.mainUrl ;
 		String scheme = StringUtil.isEmpty(request.getHeader("X-Forwarded-Proto"))?request.getScheme():request.getHeader("X-Forwarded-Proto");
 		//根据当前host更改后缀 .cn or .com
 		String hostName = request.getHeader("host");
@@ -208,13 +208,13 @@ public class WebUtil {
 			if(!StringUtil.isEmpty(hostName)){
 				mainUrl= "https://"+ hostName;
 			}else{
-				mainUrl= "https"+ OklinkConstants.mainUrl.substring(OklinkConstants.mainUrl.indexOf(":"),OklinkConstants.mainUrl.length());
+				mainUrl= "https"+ OKLinkConstants.mainUrl.substring(OKLinkConstants.mainUrl.indexOf(":"),OKLinkConstants.mainUrl.length());
 			}
 		}else{
 			if(!StringUtil.isEmpty(hostName)){
 				mainUrl= "http://"+ hostName;
 			}else{
-				mainUrl = "http"+ OklinkConstants.mainUrl.substring(OklinkConstants.mainUrl.indexOf(":"),OklinkConstants.mainUrl.length());
+				mainUrl = "http"+ OKLinkConstants.mainUrl.substring(OKLinkConstants.mainUrl.indexOf(":"),OKLinkConstants.mainUrl.length());
 			}
 		}
 		return mainUrl;
@@ -222,7 +222,7 @@ public class WebUtil {
 	
 	/**清除客户端登录Cookie*/
 	public static void clearLongLoginCookie(HttpServletRequest request,HttpServletResponse res){
-		Cookie cookie_session_id=new Cookie(OklinkConstants.cookie_session_login_info,"");
+		Cookie cookie_session_id=new Cookie(OKLinkConstants.cookie_session_login_info,"");
 		cookie_session_id.setPath("/");
 		cookie_session_id.setMaxAge(-1);
 		String domain = WebUtil.getDomain(request);
@@ -233,7 +233,7 @@ public class WebUtil {
 	/**清除用户昵称信息cookie*/
 	public static void clearNikeNameCookie(HttpServletRequest request,HttpServletResponse response){
 
-		Cookie cookie_nike_name=new Cookie(OklinkConstants.cookie_session_nike_name,"");
+		Cookie cookie_nike_name=new Cookie(OKLinkConstants.cookie_session_nike_name,"");
 		cookie_nike_name.setPath("/");
 		cookie_nike_name.setMaxAge(0);
 		String domain = WebUtil.getDomain(request);

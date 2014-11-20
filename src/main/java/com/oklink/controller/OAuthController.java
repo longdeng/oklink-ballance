@@ -50,7 +50,7 @@ public class OAuthController extends MultiActionController {
 			return "redirect:/?forward="+StringUtil.UrlEncoder("/user/index.do");
 		}
 		int code = StringUtil.toInteger(request.getParameter("code"),-1);
-		if(!PlatformEnum.isPlatformEnumCode(code)){
+		if(code==-1||!PlatformEnum.isPlatformEnumCode(code)){
 			Logs.geterrorLogger().error("OAuthController authorize ： code is not invalid");
 			return "redirect:/?forward="+StringUtil.UrlEncoder("/user/index.do");
 		}
@@ -75,7 +75,7 @@ public class OAuthController extends MultiActionController {
 		}
 		String code = request.getParameter("code");
 		int type = StringUtil.toInteger(request.getParameter("type"),-1);
-		if(StringUtil.isEmpty(code)||!PlatformEnum.isPlatformEnumCode(type)){
+		if(StringUtil.isEmpty(code)||type==-1||!PlatformEnum.isPlatformEnumCode(type)){
 			Logs.geterrorLogger().error("OAuthController token ： code is not invalid");
 			return "redirect:/?forward="+StringUtil.UrlEncoder("/user/index.do");
 		}
