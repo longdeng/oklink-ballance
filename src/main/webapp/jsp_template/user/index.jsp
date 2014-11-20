@@ -8,7 +8,7 @@
 <script type="text/javascript" src="<%=WebUtil.getPreUrl(request) %>/link/js/jquery/jquery-1.8.2.js"></script>
 </head>
 <body>
-注册：
+登录：
 <form action="">
 username:<input type="text" id="email" name="email"><br/> 
 password:<input type="password" id="password" name="password"><br/>
@@ -28,7 +28,7 @@ function sign(type){
 	$.post(url, param, function(data){
 		var result = eval('(' + data + ')');
 		if(result!=null){
-			if(result.resultCode==0){//创建收款单成功
+			if(result.resultCode==0){
 				window.location.href = "/token/index.do";
 			} else {
 				alert("用户名密码错误!");
